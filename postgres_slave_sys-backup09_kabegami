@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [ "$1" == "config" ];then
+cat << EOF
+graph_title replication delay
+graph_vlabel delay time (sec)
+graph_category PostgreSQL
+slave_delay.label time
+slave_delay.info Slave delay
+slave_delay.type GAUGE
+EOF
+else
+
+$psql -At -U ${dbuser} -p ${port} << EOF
+select 'slave_delay.value ' || extract(epoch from (now() - pg_last_xact_replay_timestamp()))
+EOF
+
+fi
+
